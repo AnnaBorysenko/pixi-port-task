@@ -6,6 +6,7 @@ type Position = {
     x: number,
     y: number
 }
+
 let gID = 1;
 let rID = 1;
 
@@ -34,8 +35,8 @@ export class Ship extends PIXI.Container {
             this.ID = rID;
             rID++;
         }
-
-        this.drow();
+        this.filled = type === "red";
+        this.draw();
     }
 
     move(cb: () => void): void {
@@ -43,8 +44,8 @@ export class Ship extends PIXI.Container {
             return
         }
         // Розрахунок вектора напрямку від поточної позиції до цільової
-        const directionX = this.positionTarget.x - this.x;
-        const directionY = this.positionTarget.y - this.y;
+        const directionX = this.positionTarget.x - this.x + 33;
+        const directionY = (this.positionTarget.y - this.y ) + 30;
 
         // Нормалізація вектора напрямку (щоб отримати одиничний вектор)
         const length = Math.sqrt(directionX * directionX + directionY * directionY);
@@ -59,12 +60,15 @@ export class Ship extends PIXI.Container {
         this.x = nextX;
         this.y = nextY;
 
+
         // Перевірка, чи корабель досягнув цільової позиції
         if (Math.abs(this.positionTarget.x - this.x) < this.speed && Math.abs(this.positionTarget.y - this.y) < this.speed) {
             // Корабель досягнув цільової позиції, можливо зупинити рух або виконати інші дії
             this.positionTarget = null;
             cb();      // Додаткові дії після досягнення цільової позиції... ( доплила в доку , уплим)
         }
+
+
     }
 
     public setPositionTarget(position: Position,) {
@@ -76,7 +80,7 @@ export class Ship extends PIXI.Container {
 //     Керує анімаціями та "tweening" за допомогою Pixi.js та TweenJS.
     }
 
-    public drow(): void {
+    public draw(): void {
         let lineColor = this.type === "green" ? 0x00ff00 : 0xff0000;
         let fillColor = this.filled ? lineColor : 0x0096FF;
         this.shipGraphics.beginFill(lineColor);
@@ -88,8 +92,8 @@ export class Ship extends PIXI.Container {
     }
 
     public update(): void {
-        this.drow();
-        this.move(() => console.log("get to ...", this));
+        this.draw();
+        this.move(() => console.log("get to ..."));
     }
 
 }

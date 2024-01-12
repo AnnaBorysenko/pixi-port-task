@@ -6,7 +6,7 @@ let canvasElement = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const app = new PIXI.Application({
     width: 850,
     height: 850,
-    backgroundColor: 0x005b96,
+    backgroundColor: 0x0096FF,
 
     view: canvasElement
 });
