@@ -5,7 +5,7 @@ export class Dock extends PIXI.Container {
     private dockGraphics: PIXI.Graphics;
     public occupied: number | null;
     public isLoaded: boolean;
-    public id : number;
+    public id: number;
 
     constructor(id: number) {
         super();
@@ -16,14 +16,16 @@ export class Dock extends PIXI.Container {
         this.draw();
     }
 
-    public draw(): void {
-        if (!this.isLoaded) {
-            this.dockGraphics.lineStyle(5, 0xffff00);
 
-        } else {
-            this.dockGraphics.beginFill(0xffff00);
-        }
+
+    public draw(): void {
+        let lineColor = 0xffff00;
+        let fillColor = this.isLoaded ? lineColor : 0x0096FF;
+        this.dockGraphics.beginFill(lineColor);
+        this.dockGraphics.lineStyle(5, lineColor);
+        this.dockGraphics.beginFill(fillColor);
         this.dockGraphics.drawRect(0, 0, 30, 100);
+        this.dockGraphics.endFill();
         this.addChild(this.dockGraphics);
     }
 

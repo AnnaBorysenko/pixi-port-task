@@ -112,7 +112,6 @@ export class Game {
 
     public moveFromDock(currentShip: Ship, dock: Dock, exit: Exit) {
         let targetPosition = {x: exit.x, y: exit.y};
-        dock.isLoaded = true;
         dock.update();
         new TWEEN.Tween({x: currentShip.position.x, y: currentShip.position.y})
             .to(targetPosition, 3000)
@@ -135,17 +134,14 @@ export class Game {
 
     private moveToFreeDock(ship: Ship) {
         if (ship.type === "green") {
+            let currentShip = ship;
             const dock = this.docks.find(dock => (dock.occupied || dock.occupied === ship.ID) && dock.isLoaded);
-            if (dock) {
-                let expectedDockId = dock.id
+            if (dock && currentShip.filled === false) {
                 let currentShip = ship;
-                this.animateShipMovement(ship, {x: dock.position.x + 30, y: dock.position.y + 30});
+                this.animateShipMovement(currentShip, {x: dock.position.x + 30, y: dock.position.y + 30});
                 setTimeout(() => {
-                    if (dock.id === expectedDockId && dock.isLoaded) {
-                        console.log(dock)
-                        dock.isLoaded = false;
-                        dock.draw();
-                    }
+                    dock.isLoaded = false;
+                    dock.update();
                     ship.filled = true;
                     this.moveFromDock(currentShip, dock, this.exit)
                 }, 5000);
@@ -160,10 +156,8 @@ export class Game {
                 this.animateShipMovement(ship, {x: dock.position.x + 30, y: dock.position.y + 30});
                 dock.occupied = ship.ID;
                 setTimeout(() => {
-                    if (dock.id === expectedDockId && !dock.isLoaded) {
-                        dock.isLoaded = true;
-                        dock.draw();
-                    }
+                    dock.isLoaded = true;
+                    dock.update();
                     ship.filled = false;
                     this.moveFromDock(currentShip, dock, this.exit)
                 }, 5000);
@@ -219,14 +213,11 @@ export class Game {
     }
 
     public update() {
-
         this.ships.forEach(ship => {
             ship.update();
             this.moveShip(ship);
-            console.log("ships", this.ships)
 
         })
-
         if (Date.now() - this.createShipTime > 8 * 1000) {
             this.createShip();
             this.createShipTime = Date.now();
