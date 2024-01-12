@@ -136,7 +136,7 @@ export class Game {
         if (ship.type === "green") {
             let currentShip = ship;
             const dock = this.docks.find(dock => (dock.occupied || dock.occupied === ship.ID) && dock.isLoaded);
-            if (dock && currentShip.filled === false) {
+            if (dock && !currentShip.filled) {
                 let currentShip = ship;
                 this.animateShipMovement(currentShip, {x: dock.position.x + 30, y: dock.position.y + 30});
                 setTimeout(() => {
