@@ -6,6 +6,7 @@ export class Dock extends PIXI.Container {
     public occupied: number | null;
     public isLoaded: boolean;
     public id: number;
+    public timer : number | null;
 
     constructor(id: number) {
         super();
@@ -13,6 +14,7 @@ export class Dock extends PIXI.Container {
         this.occupied = null;
         this.isLoaded = false;
         this.id = id;
+        this.timer = null;
         this.draw();
     }
 
