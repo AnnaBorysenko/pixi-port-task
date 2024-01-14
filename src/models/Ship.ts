@@ -9,7 +9,7 @@ let rID = 2;
 export class Ship extends PIXI.Container {
     private shipGraphics: PIXI.Graphics;
     public type: ShipType;
-    public filled: boolean;
+    public isFilled: boolean;
     public ID: number;
     public readyToRemove : number | null;
 
@@ -19,7 +19,7 @@ export class Ship extends PIXI.Container {
         this.readyToRemove = null;
         this.shipGraphics = new PIXI.Graphics();
         this.type = type;
-        this.filled = false;
+        this.isFilled = false;
         this.position =  {x: 950, y: type === "green" ? 200 : 600}
         if (type === "green") {
             this.ID = gID;
@@ -28,7 +28,7 @@ export class Ship extends PIXI.Container {
             this.ID = rID;
             rID++;
         }
-        this.filled = type === "red";
+        this.isFilled = type === "red";
         this.draw();
     }
 
@@ -36,7 +36,7 @@ export class Ship extends PIXI.Container {
 
     public draw(): void {
         let lineColor = this.type === "green" ? 0x00ff00 : 0xff0000;
-        let fillColor = this.filled ? lineColor : 0x0096FF;
+        let fillColor = this.isFilled ? lineColor : 0x0096FF;
         this.shipGraphics.beginFill(lineColor);
         this.shipGraphics.lineStyle(5, lineColor);
         this.shipGraphics.beginFill(fillColor);
