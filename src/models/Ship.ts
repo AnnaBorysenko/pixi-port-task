@@ -30,7 +30,7 @@ export class Ship extends PIXI.Container {
     public moveTo( targetPosition: { x: number, y: number }) {
         const coords = {x: this.x, y: this.y};
         new TWEEN.Tween(coords)
-            .to(targetPosition, 5000)
+            .to(targetPosition, 7000)
             .easing(TWEEN.Easing.Exponential.Out)
             .onUpdate(() => {
                 this.x = coords.x;
