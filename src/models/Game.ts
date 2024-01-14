@@ -13,8 +13,8 @@ export class Game {
     private gates: Gate[] = [];
     private port: Port;
     private exit: Exit;
-    private gateEntranceStart: number;
-    private gateEntranceEnd: number;
+    private readonly gateEntranceStart: number;
+    private readonly gateEntranceEnd: number;
 
 
     private createShipTime: number;
@@ -122,12 +122,18 @@ export class Game {
         }
 
         if (ship.type === "red") {
-            const dock = this.docks.find(dock => (!dock.occupied || dock.occupied === ship.ID) && !dock.isLoaded);
-            if (dock && ship.isFilled) {
-                dock.occupied = ship.ID;
-                dock.timer = dock.timer ? dock.timer : Date.now();
-                return dock;
+            const freeDock = this.docks.find(dock => !dock.occupied  && !dock.isLoaded);
+            const currentShipDock = this.docks.find(dock  => dock.occupied === ship.ID);
+
+            if(currentShipDock) {
+                return currentShipDock
             }
+            if (freeDock && ship.isFilled) {
+                freeDock.occupied = ship.ID;
+                freeDock.timer = freeDock.timer ? freeDock.timer : Date.now();
+                return freeDock;
+            }
+
         }
     }
 

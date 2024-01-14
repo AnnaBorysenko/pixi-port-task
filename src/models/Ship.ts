@@ -7,10 +7,10 @@ let gID = 1;
 let rID = 2;
 
 export class Ship extends PIXI.Container {
-    private shipGraphics: PIXI.Graphics;
-    public type: ShipType;
+    public shipGraphics: PIXI.Graphics;
+    public readonly type: ShipType;
     public isFilled: boolean;
-    public ID: number;
+    public readonly  ID: number;
     public readyToRemove : number | null;
 
 
