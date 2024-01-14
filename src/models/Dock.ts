@@ -2,12 +2,11 @@ import * as PIXI from 'pixi.js';
 
 
 export class Dock extends PIXI.Container {
-    private dockGraphics: PIXI.Graphics;
+    private readonly dockGraphics: PIXI.Graphics;
     public occupied: number | null;
     public isLoaded: boolean;
     public id: number;
     public timer : number | null;
-
     constructor(id: number) {
         super();
         this.dockGraphics = new PIXI.Graphics();
@@ -17,8 +16,6 @@ export class Dock extends PIXI.Container {
         this.timer = null;
         this.draw();
     }
-
-
 
     public draw(): void {
         let lineColor = 0xffff00;

@@ -12,5 +12,5 @@ const app = new PIXI.Application({
 });
 
 const game = new Game(app);
-app.ticker.add(game.update, game)
+app.ticker.add(game.update, game);
 

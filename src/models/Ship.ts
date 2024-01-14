@@ -1,19 +1,15 @@
 import * as PIXI from 'pixi.js';
+import * as TWEEN from "@tweenjs/tween.js";
 
 type ShipType = "green" | "red";
-
-
 let gID = 1;
 let rID = 2;
-
 export class Ship extends PIXI.Container {
     public shipGraphics: PIXI.Graphics;
     public readonly type: ShipType;
     public isFilled: boolean;
     public readonly  ID: number;
     public readyToRemove : number | null;
-
-
     constructor(type: ShipType) {
         super();
         this.readyToRemove = null;
@@ -31,8 +27,17 @@ export class Ship extends PIXI.Container {
         this.isFilled = type === "red";
         this.draw();
     }
-
-
+    public moveTo( targetPosition: { x: number, y: number }) {
+        const coords = {x: this.x, y: this.y};
+        new TWEEN.Tween(coords)
+            .to(targetPosition, 5000)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .onUpdate(() => {
+                this.x = coords.x;
+                this.y = coords.y;
+            })
+            .start();
+    }
 
     public draw(): void {
         let lineColor = this.type === "green" ? 0x00ff00 : 0xff0000;
