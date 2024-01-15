@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import * as TWEEN from '@tweenjs/tween.js'
+import {constants} from "../constants.ts";
 import {Dock} from "./Dock";
 import {Ship} from "./Ship";
 import {Port} from "./Port";
@@ -10,7 +11,6 @@ export class Game {
     private app: PIXI.Application;
     private ships: Ship[] = [];
     private docks: Dock[] = [];
-    private gates: Gate[] = [];
     private port: Port;
     private exit: Exit;
     private readonly gateEntranceStart: number;
@@ -23,9 +23,8 @@ export class Game {
         this.app = app;
         this.docks = [];
         this.ships = [];
-        this.gates = [];
-        this.gateEntranceStart = 80;
-        this.gateEntranceEnd = 295;
+        this.gateEntranceStart = constants.GATE_ENTRANCE_START;
+        this.gateEntranceEnd = constants.GATE_ENTRANCE_END;
         this.port = new Port();
         this.exit = new Exit();
         this.init();
@@ -51,25 +50,22 @@ export class Game {
     }
 
     private initGates(): void {
-        this.gates = [];
-        const gatePositions = [{x: 280, y: 660}, {x: 280, y: 0}];
-
+        const gatePositions = [{x: 280, y: 670}, {x: 280, y: 0}];
         for (let i = 0; i < gatePositions.length; i++) {
             const gate = new Gate();
             gate.x = gatePositions[i].x;
             gate.y = gatePositions[i].y;
             this.app.stage.addChild(gate);
-            this.gates.push(gate);
         }
     }
 
     private initDocks(): void {
         this.docks = [];
 
-        const numberOfDocks = 4;
-        const startX = 20;
-        const startY = 150;
-        const deltaY = 150;
+        const numberOfDocks = constants.DOCK_AMOUNT;
+        const startX = constants.DOCK_START_X;
+        const startY = constants.DOCK_START_Y;
+        const deltaY = constants.DOCK_DELTA;
         let id = 1;
 
         for (let i = 0; i < numberOfDocks; i++) {
@@ -81,21 +77,23 @@ export class Game {
             this.docks.push(dock);
         }
     }
+
     private initExit(): void {
         this.exit = new Exit();
-        this.exit.x = 830;
-        this.exit.y = 400;
+        this.exit.x = constants.EXIT_START_X;
+        this.exit.y = constants.EXIT_START_Y;
         this.app.stage.addChild(this.exit);
     }
+
     public createShip() {
-        const type = Math.random() > 0.5 ? "green" : "red";
+        const type = Math.random() > 0.5 ? constants.SHIP_TYPE_EMPTY : constants.SHIP_TYPE_LOADED;
         let newShip = new Ship(type);
         this.ships.push(newShip);
         this.app.stage.addChild(newShip);
     }
 
     private getTargetDock(ship: Ship) {
-        if (ship.type === "green") {
+        if (ship.type === constants.SHIP_TYPE_EMPTY) {
             const dock = this.docks.find(dock => (!dock.occupied || dock.occupied === ship.ID) && dock.isLoaded);
             if (dock && !ship.isFilled) {
                 dock.occupied = ship.ID;
@@ -103,7 +101,7 @@ export class Game {
                 return dock;
             }
         }
-        if (ship.type === "red") {
+        if (ship.type === constants.SHIP_TYPE_LOADED) {
             const freeDock = this.docks.find(dock => !dock.occupied && !dock.isLoaded);
             const currentShipDock = this.docks.find(dock => dock.occupied === ship.ID);
 
@@ -123,7 +121,7 @@ export class Game {
         const dock = this.docks.find(dock => (dock.occupied === ship.ID));
 
         if (dock?.timer && Date.now() - 5000 > dock.timer) {
-            if (ship.type === "red") {
+            if (ship.type === constants.SHIP_TYPE_LOADED) {
                 ship.readyToRemove = Date.now();
                 ship.isFilled = false;
                 dock.isLoaded = true;
@@ -131,7 +129,7 @@ export class Game {
                 dock.timer = null;
                 ship.moveTo({x: this.exit.x, y: this.exit.y});
             }
-            if (ship.type === "green") {
+            if (ship.type === constants.SHIP_TYPE_EMPTY) {
                 ship.readyToRemove = Date.now();
                 ship.isFilled = true;
                 dock.isLoaded = false;
@@ -146,25 +144,25 @@ export class Game {
     public moveToLine(ship: Ship) {
         const prevShip = this.ships.find(currentShip => currentShip.type === ship.type && currentShip.ID == ship.ID - 1);
 
-        let targetX = 300;
-        let targetY = ship.type === "green" ? 200 : 600;
+        let targetX = constants.LINE_TARGET_X;
+        let targetY = ship.type === constants.SHIP_TYPE_EMPTY ? constants.LINE_TARGET_EMPTY_Y : constants.LINE_TARGET_LOADED_Y;
 
-        if (ship.type === "red") {
+        if (ship.type === constants.SHIP_TYPE_LOADED) {
             if (!this.unloadingQueue || this.unloadingQueue === ship.ID) {
                 this.unloadingQueue = ship.ID
             }
             if (prevShip && prevShip.isFilled) {
-                targetX = prevShip.x + 120;
+                targetX = prevShip.x + constants.LINE_DELTA;
                 targetY = prevShip.y;
             }
 
         }
-        if (ship.type === "green") {
+        if (ship.type === constants.SHIP_TYPE_EMPTY) {
             if (!this.loadingQueue || this.loadingQueue === ship.ID) {
                 this.loadingQueue = ship.ID
             }
             if (prevShip && !prevShip.isFilled && prevShip.x > 290) {
-                targetX = prevShip.x + 120;
+                targetX = prevShip.x + constants.LINE_DELTA;
                 targetY = prevShip.y;
             }
         }
@@ -182,15 +180,21 @@ export class Game {
         if (this.isEntranceOccupied()) return;
         if (ship.readyToRemove) return;
         const dock = this.getTargetDock(ship);
-        if (ship.type === "red") {
-            if (dock && ship.isFilled) ship.moveTo({x: dock.position.x + 30, y: dock.position.y + 30});
+        if (ship.type === constants.SHIP_TYPE_LOADED) {
+            if (dock && ship.isFilled) ship.moveTo({
+                x: dock.position.x + constants.DOCK_RANGE,
+                y: dock.position.y + constants.DOCK_RANGE
+            });
 
             if (!dock) this.moveToLine(ship);
 
             this.moveToExit(ship);
         }
-        if (ship.type === "green") {
-            if (dock && !ship.isFilled) ship.moveTo({x: dock.position.x + 30, y: dock.position.y + 30});
+        if (ship.type === constants.SHIP_TYPE_EMPTY) {
+            if (dock && !ship.isFilled) ship.moveTo({
+                x: dock.position.x + constants.DOCK_RANGE,
+                y: dock.position.y + constants.DOCK_RANGE
+            });
 
             if (!dock) this.moveToLine(ship);
 
@@ -208,7 +212,6 @@ export class Game {
         this.ships.splice(this.ships.indexOf(ship), 1);
     }
 
-
     public update() {
         this.docks.forEach(dock => {
             dock.update();
@@ -216,7 +219,7 @@ export class Game {
         this.ships.forEach(ship => {
             ship.update();
             this.moveShip(ship);
-            if (ship.readyToRemove && Date.now() - ship.readyToRemove > 5000) this.removeShip(ship);
+            if (ship.readyToRemove && Date.now() - ship.readyToRemove > constants.TIME_INTERRUPTION) this.removeShip(ship);
 
         })
         if (Date.now() - this.createShipTime > 8 * 1000) {

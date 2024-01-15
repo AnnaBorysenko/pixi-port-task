@@ -1,8 +1,11 @@
 import * as PIXI from "pixi.js";
-export class Port extends PIXI.Container{
-    private isFreeEnter : boolean
-    private isOccupiedDock : boolean;
-    private isLoadingShip : boolean;
+import {constants} from "../constants.ts";
+
+export class Port extends PIXI.Container {
+    private isFreeEnter: boolean
+    private isOccupiedDock: boolean;
+    private isLoadingShip: boolean;
+
     constructor() {
         super();
         this.isFreeEnter = false;
@@ -10,10 +13,11 @@ export class Port extends PIXI.Container{
         this.isLoadingShip = false;
         this.startPortView();
     }
+
     startPortView(): void {
         const portGraphics = new PIXI.Graphics();
-        portGraphics.beginFill(0x0096FF);
-        portGraphics.drawRect(0, 0, 300, 850);
+        portGraphics.beginFill(constants.COLOR_MAIN);
+        portGraphics.drawRect(0, 0, constants.PORT_WIDTH, constants.PORT_HEIGHT);
         portGraphics.endFill();
         this.addChild(portGraphics);
     }

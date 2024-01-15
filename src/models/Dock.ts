@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import {constants} from "../constants.ts";
 
 
 export class Dock extends PIXI.Container {
@@ -6,7 +7,8 @@ export class Dock extends PIXI.Container {
     public occupied: number | null;
     public isLoaded: boolean;
     public id: number;
-    public timer : number | null;
+    public timer: number | null;
+
     constructor(id: number) {
         super();
         this.dockGraphics = new PIXI.Graphics();
@@ -18,12 +20,12 @@ export class Dock extends PIXI.Container {
     }
 
     public draw(): void {
-        let lineColor = 0xffff00;
-        let fillColor = this.isLoaded ? lineColor : 0x0096FF;
+        let lineColor = constants.COLOR_DOCK;
+        let fillColor = this.isLoaded ? lineColor : constants.COLOR_MAIN;
         this.dockGraphics.beginFill(lineColor);
-        this.dockGraphics.lineStyle(5, lineColor);
+        this.dockGraphics.lineStyle(constants.DOCK_OUTLINE_WIDTH, lineColor);
         this.dockGraphics.beginFill(fillColor);
-        this.dockGraphics.drawRect(0, 0, 30, 100);
+        this.dockGraphics.drawRect(0, 0, constants.DOCK_WIDTH, constants.DOCK_HEIGHT);
         this.dockGraphics.endFill();
         this.addChild(this.dockGraphics);
     }
